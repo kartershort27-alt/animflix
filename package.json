@@ -25,9 +25,10 @@
       "target": "nsis"
     },
     "publish": {
-      "provider": "github",
-      "owner":    "kartershort27-alt",
-      "repo":     "animflix"
+      "provider":    "github",
+      "owner":       "kartershort27-alt",
+      "repo":        "animflix",
+      "releaseType": "release"
     },
     "directories": {
       "output": "dist"
