@@ -28,7 +28,17 @@ function openPlayer(title, epKey) {
     video.src = url;
     video.style.display = 'block';
     noVideo.style.display = 'none';
-    video.play().catch(() => {});
+    video.load();
+    video.play().catch(err => console.warn('[player] play() rejected:', err, 'url:', url));
+    video.onerror = () => {
+      const code = video.error ? video.error.code : '?';
+      const msg  = video.error ? video.error.message : 'unknown';
+      console.error('[player] video error', code, msg, 'url:', url);
+      noVideo.querySelector('.vp-no-video-msg').textContent =
+        'Video failed to load (error ' + code + '). Check the console for details.';
+      video.style.display = 'none';
+      noVideo.style.display = 'flex';
+    };
   } else {
     video.src = '';
     video.style.display = 'none';
