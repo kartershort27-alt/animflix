@@ -1,33 +1,33 @@
 {
   "name": "aniflix",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "electron-main.js",
   "scripts": {
-    "start":    "node server.js",
+    "start": "node server.js",
     "electron": "electron .",
-    "build":    "electron-builder"
+    "build": "electron-builder"
   },
   "dependencies": {
-    "cors":             "^2.8.5",
+    "cors": "^2.8.5",
     "electron-updater": "^6.1.7",
-    "express":          "^4.18.2",
-    "multer":           "^1.4.5-lts.1"
+    "express": "^4.18.2",
+    "multer": "^1.4.5-lts.1"
   },
   "devDependencies": {
-    "electron":         "^28.0.0",
+    "electron": "^28.0.0",
     "electron-builder": "^24.13.3"
   },
   "build": {
-    "appId":       "com.aniflix.app",
+    "appId": "com.aniflix.app",
     "productName": "AniFlix",
-    "asar":        false,
+    "asar": false,
     "win": {
       "target": "nsis"
     },
     "publish": {
       "provider": "github",
-      "owner":    "kartershort27-alt",
-      "repo":     "animflix"
+      "owner": "kartershort27-alt",
+      "repo": "animflix"
     },
     "directories": {
       "output": "dist"
