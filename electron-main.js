@@ -30,9 +30,9 @@ function createWindow() {
     show: false
   });
 
-  // Start the Express server in the same process
+  // Only start the Express server if nothing is already on port 3001
   process.env.DATA_DIR = app.getPath('userData');
-  require('./server.js');
+  http.get('http://localhost:3001', () => {}).on('error', () => require('./server.js'));
 
   // Load only once the server is actually listening
   waitForServer(() => {

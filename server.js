@@ -383,7 +383,7 @@ function _safeKey(s) { return String(s).replace(/[^a-zA-Z0-9_.-]/g, '_'); }
 function _safePath(s) { return String(s).replace(/\.\./g, '').replace(/[^a-zA-Z0-9_/.-]/g, '_'); }
 
 // ── Start ─────────────────────────────────────────────────────────────────────
-app.listen(PORT, async () => {
+const _server = app.listen(PORT, async () => {
   _jsonLib  = await _loadJsonLibrary();
   _libShows = _scanLibrary();
   _watchLibrary();
@@ -393,4 +393,8 @@ app.listen(PORT, async () => {
   console.log(`\n  AniFlix server running → http://localhost:${PORT}`);
   console.log(`  library.json: ${j} title${j !== 1 ? 's' : ''} (GitHub: ${GH_OWNER}/${GH_REPO})`);
   console.log(`  Local folders: ${f} title${f !== 1 ? 's' : ''}\n`);
+});
+_server.on('error', err => {
+  if (err.code === 'EADDRINUSE') console.log(`  Port ${PORT} already in use — skipping server start`);
+  else console.error('Server error:', err);
 });
