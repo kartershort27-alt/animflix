@@ -1,0 +1,101 @@
+// titleMedia[key] = { imageUrl, videoUrl, videoName, videoSize, episodeVideos: { e1: url, e2: url, ... } }
+const titleMedia = {};
+
+let _currentPlayerTitle = null;
+
+function openPlayer(title, epKey) {
+  _currentPlayerTitle = title;
+  const key = title.toLowerCase();
+  const media = titleMedia[key];
+
+  // Episode-specific video takes priority over the show-level video
+  const url = (epKey && media && media.episodeVideos && media.episodeVideos[epKey])
+              || (media && media.videoUrl)
+              || null;
+
+  const epNum = epKey ? epKey.replace('e', '') : null;
+  document.getElementById('vpTitleText').textContent =
+    epNum ? `${title}  —  Episode ${epNum}` : title;
+
+  const video = document.getElementById('vpVideo');
+  const noVideo = document.getElementById('vpNoVideo');
+
+  if (url) {
+    video.src = url;
+    video.style.display = 'block';
+    noVideo.style.display = 'none';
+    video.play().catch(() => {});
+  } else {
+    video.src = '';
+    video.style.display = 'none';
+    noVideo.style.display = 'flex';
+  }
+
+  document.getElementById('vpOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function playEpisode(title, epKey) {
+  closeModal();
+  openPlayer(title, epKey);
+}
+
+function closePlayer() {
+  const video = document.getElementById('vpVideo');
+  video.pause();
+  video.src = '';
+  document.getElementById('vpOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  _currentPlayerTitle = null;
+}
+
+// Called by modal Play button
+function playCurrentTitle() {
+  const title = document.getElementById('modalTitle').textContent;
+  if (title) {
+    closeModal();
+    openPlayer(title);
+  }
+}
+
+// Modal My List button
+function toggleMyListFromModal() {
+  const title = document.getElementById('modalTitle').textContent;
+  if (!title) return;
+  const btn = document.getElementById('modalMyListBtn');
+  if (myList.has(title)) {
+    myList.delete(title);
+    btn.textContent = '+ My List';
+  } else {
+    myList.add(title);
+    btn.textContent = '✓ My List';
+  }
+  updateMyListRow();
+}
+
+// Keyboard shortcut — Escape closes player
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('vpOverlay').classList.contains('open')) {
+    closePlayer();
+  }
+});
+
+// ── Card thumbnail helpers (called by admin.js after save) ───────────────────
+function applyThumbnailToCards(titleKey, imageUrl) {
+  document.querySelectorAll(`.card[data-title="${titleKey}"] .card-thumb`).forEach(thumb => {
+    thumb.style.backgroundImage = `url('${imageUrl}')`;
+    thumb.style.backgroundSize = 'cover';
+    thumb.style.backgroundPosition = 'center';
+    // Remove old gradient class so image shows through
+    thumb.className = 'card-thumb';
+  });
+}
+
+function applyThumbnailToTableRow(row, imageUrl) {
+  const thumb = row.querySelector('.tbl-thumb');
+  if (!thumb) return;
+  thumb.style.backgroundImage = `url('${imageUrl}')`;
+  thumb.style.backgroundSize = 'cover';
+  thumb.style.backgroundPosition = 'center';
+  thumb.textContent = '';
+}

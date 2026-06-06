@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AniFlix</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-left">
+    <a class="logo" href="#" id="logoBtn">ANIFLIX</a>
+    <ul class="nav-links">
+      <li><a href="#">Home</a></li>
+      <li><a href="#">TV Shows</a></li>
+      <li><a href="#">Movies</a></li>
+      <li><a href="#">New &amp; Popular</a></li>
+      <li><a href="#">My List</a></li>
+      <li><a href="#">Browse by Languages</a></li>
+    </ul>
+  </div>
+  <div class="nav-right">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="search-bar" id="searchBar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" placeholder="Search titles..." id="searchInput">
+      </div>
+      <div class="nav-icon" onclick="toggleSearch()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      </div>
+    </div>
+    <div class="notif-wrap nav-icon">
+      <div class="notif-dot"></div>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+    </div>
+    <div class="profile-pic">K</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-visual"><div class="hero-visual-icon">⚔</div></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <svg width="9" height="13" viewBox="0 0 9 13" fill="white"><polygon points="0,0 9,6.5 0,13"/></svg>
+      #1 IN SHOWS TODAY
+    </div>
+    <div class="hero-title">DARK<br>HORIZON</div>
+    <div class="hero-meta">
+      <span class="match-pct">97% Match</span>
+      <span>2025</span>
+      <span class="age-badge">TV-MA</span>
+      <span>3 Seasons</span>
+      <span style="font-size:11px;border:1px solid rgba(255,255,255,0.4);padding:1px 5px">HD</span>
+    </div>
+    <p class="hero-desc">A former intelligence operative discovers a conspiracy that stretches across decades when her dead sister's encrypted files point to a clandestine organization with ties to the highest levels of government. With enemies on every side, she must unravel the truth before it buries her.</p>
+    <div class="hero-btns">
+      <button class="btn btn-play" onclick="openPlayer('Dark Horizon')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="black"><polygon points="5,3 19,12 5,21"/></svg>
+        Play
+      </button>
+      <button class="btn btn-info" onclick="openModal('Dark Horizon')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+        More Info
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENT ROWS -->
+<div class="content">
+
+  <!-- Trending Now -->
+  <div class="row">
+    <div class="row-title">Trending Now <span class="see-all">See all ›</span></div>
+    <div class="cards-wrap">
+      <button class="scroll-btn left" onclick="scrollRow(this,-1)">&#8249;</button>
+      <div class="cards-outer"><div class="cards">
+        <div class="card" data-title="Dark Horizon" onclick="openModal('Dark Horizon')"><div class="card-thumb g1"><div class="n-badge">N</div><div class="card-label">Dark Horizon</div></div></div>
+        <div class="card" data-title="Nexus Protocol" onclick="openModal('Nexus Protocol')"><div class="card-thumb g3"><div class="n-badge">N</div><div class="card-label">Nexus Protocol</div></div></div>
+        <div class="card" data-title="Crimson Isle" onclick="openModal('Crimson Isle')"><div class="card-thumb g5"><div class="n-badge">N</div><div class="card-label">Crimson Isle</div></div></div>
+        <div class="card" data-title="Echo Chamber" onclick="openModal('Echo Chamber')"><div class="card-thumb g8"><div class="n-badge">N</div><div class="card-label">Echo Chamber</div></div></div>
+        <div class="card" data-title="Void Walker" onclick="openModal('Void Walker')"><div class="card-thumb g13"><div class="n-badge">N</div><div class="card-label">Void Walker</div></div></div>
+        <div class="card" data-title="Storm Protocol" onclick="openModal('Storm Protocol')"><div class="card-thumb g11"><div class="n-badge">N</div><div class="card-label">Storm Protocol</div></div></div>
+        <div class="card" data-title="Glass City" onclick="openModal('Glass City')"><div class="card-thumb g16"><div class="n-badge">N</div><div class="card-label">Glass City</div></div></div>
+        <div class="card" data-title="Ember Falls" onclick="openModal('Ember Falls')"><div class="card-thumb g20"><div class="n-badge">N</div><div class="card-label">Ember Falls</div></div></div>
+      </div></div>
+      <button class="scroll-btn right" onclick="scrollRow(this,1)">&#8250;</button>
+    </div>
+  </div>
+
+  <!-- Top 10 -->
+  <div class="row">
+    <div class="row-title">Top 10 in Your Country Today <span class="see-all">See all ›</span></div>
+    <div class="cards-wrap">
+      <button class="scroll-btn left" onclick="scrollRow(this,-1)">&#8249;</button>
+      <div class="cards-outer"><div class="cards">
+        <div class="card top10" data-title="Dark Horizon" onclick="openModal('Dark Horizon')"><div class="top10-num">1</div><div class="card-thumb g4"><div class="card-label">Dark Horizon</div></div></div>
+        <div class="card top10" data-title="Nexus Protocol" onclick="openModal('Nexus Protocol')"><div class="top10-num">2</div><div class="card-thumb g3"><div class="card-label">Nexus Protocol</div></div></div>
+        <div class="card top10" data-title="Crimson Isle" onclick="openModal('Crimson Isle')"><div class="top10-num">3</div><div class="card-thumb g5"><div class="card-label">Crimson Isle</div></div></div>
+        <div class="card top10" data-title="Void Walker" onclick="openModal('Void Walker')"><div class="top10-num">4</div><div class="card-thumb g13"><div class="card-label">Void Walker</div></div></div>
+        <div class="card top10" data-title="Storm Protocol" onclick="openModal('Storm Protocol')"><div class="top10-num">5</div><div class="card-thumb g11"><div class="card-label">Storm Protocol</div></div></div>
+        <div class="card top10" data-title="Glass City" onclick="openModal('Glass City')"><div class="top10-num">6</div><div class="card-thumb g16"><div class="card-label">Glass City</div></div></div>
+        <div class="card top10" data-title="Echo Chamber" onclick="openModal('Echo Chamber')"><div class="top10-num">7</div><div class="card-thumb g8"><div class="card-label">Echo Chamber</div></div></div>
+        <div class="card top10" data-title="Ember Falls" onclick="openModal('Ember Falls')"><div class="top10-num">8</div><div class="card-thumb g20"><div class="card-label">Ember Falls</div></div></div>
+        <div class="card top10"><div class="top10-num">9</div><div class="card-thumb g7"><div class="card-label">Iron Coast</div></div></div>
+        <div class="card top10"><div class="top10-num">10</div><div class="card-thumb g9"><div class="card-label">Neon Empire</div></div></div>
+      </div></div>
+      <button class="scroll-btn right" onclick="scrollRow(this,1)">&#8250;</button>
+    </div>
+  </div>
+
+  <!-- Continue Watching -->
+  <div class="row">
+    <div class="row-title">Continue Watching for K</div>
+    <div class="cards-wrap">
+      <button class="scroll-btn left" onclick="scrollRow(this,-1)">&#8249;</button>
+      <div class="cards-outer"><div class="cards">
+        <div class="card" data-title="Void Walker" onclick="openModal('Void Walker')">
+          <div class="card-thumb g13"><div class="n-badge">N</div><div class="card-label">Void Walker · S2:E4</div></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:65%"></div></div>
+        </div>
+        <div class="card" data-title="Dark Horizon" onclick="openModal('Dark Horizon')">
+          <div class="card-thumb g1"><div class="n-badge">N</div><div class="card-label">Dark Horizon · S1:E7</div></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:30%"></div></div>
+        </div>
+        <div class="card" data-title="Glass City" onclick="openModal('Glass City')">
+          <div class="card-thumb g16"><div class="n-badge">N</div><div class="card-label">Glass City · S2:E1</div></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:88%"></div></div>
+        </div>
+        <div class="card" data-title="Nexus Protocol" onclick="openModal('Nexus Protocol')">
+          <div class="card-thumb g3"><div class="n-badge">N</div><div class="card-label">Nexus Protocol · S1:E3</div></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:45%"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-thumb g15"><div class="n-badge">N</div><div class="card-label">Solar Wind · 1h 34m left</div></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:55%"></div></div>
+        </div>
+      </div></div>
+      <button class="scroll-btn right" onclick="scrollRow(this,1)">&#8250;</button>
+    </div>
+  </div>
+
+  <!-- New on Netflix -->
+  <div class="row">
+    <div class="row-title">New on AniFlix <span class="see-all">See all ›</span></div>
+    <div class="cards-wrap">
+      <button class="scroll-btn left" onclick="scrollRow(this,-1)">&#8249;</button>
+      <div class="cards-outer"><div class="cards" id="newOnNetflixCards">
+        <div class="card"><div class="card-thumb g2"><div class="n-badge">N</div><div class="card-label">The Cascade</div></div></div>
+        <div class="card"><div class="card-thumb g6"><div class="n-badge">N</div><div class="card-label">Arctic Watch</div></div></div>
+        <div class="card"><div class="card-thumb g10"><div class="n-badge">N</div><div class="card-label">Red Signal</div></div></div>
+        <div class="card"><div class="card-thumb g12"><div class="n-badge">N</div><div class="card-label">Bloom</div></div></div>
+        <div class="card"><div class="card-thumb g14"><div class="n-badge">N</div><div class="card-label">Parallel</div></div></div>
+        <div class="card"><div class="card-thumb g17"><div class="n-badge">N</div><div class="card-label">Pulse</div></div></div>
+        <div class="card"><div class="card-thumb g18"><div class="n-badge">N</div><div class="card-label">Ocean Floor</div></div></div>
+        <div class="card"><div class="card-thumb g19"><div class="n-badge">N</div><div class="card-label">Skyline</div></div></div>
+      </div></div>
+      <button class="scroll-btn right" onclick="scrollRow(this,1)">&#8250;</button>
+    </div>
+  </div>
+
+  <!-- Action & Adventure -->
+  <div class="row">
+    <div class="row-title">Action &amp; Adventure <span class="see-all">See all ›</span></div>
+    <div class="cards-wrap">
+      <button class="scroll-btn left" onclick="scrollRow(this,-1)">&#8249;</button>
+      <div class="cards-outer"><div class="cards">
+        <div class="card" data-title="Storm Protocol" onclick="openModal('Storm Protocol')"><div class="card-thumb g11"><div class="n-badge">N</div><div class="card-label">Storm Protocol</div></div></div>
+        <div class="card" data-title="Nexus Protocol" onclick="openModal('Nexus Protocol')"><div class="card-thumb g3"><div class="n-badge">N</div><div class="card-label">Nexus Protocol</div></div></div>
+        <div class="card" data-title="Crimson Isle" onclick="openModal('Crimson Isle')"><div class="card-thumb g5"><div class="n-badge">N</div><div class="card-label">Crimson Isle</div></div></div>
+        <div class="card" data-title="Void Walker" onclick="openModal('Void Walker')"><div class="card-thumb g13"><div class="n-badge">N</div><div class="card-label">Void Walker</div></div></div>
+        <div class="card"><div class="card-thumb g15"><div class="n-badge">N</div><div class="card-label">Solar Wind</div></div></div>
+        <div class="card"><div class="card-thumb g10"><div class="n-badge">N</div><div class="card-label">Red Signal</div></div></div>
+        <div class="card"><div class="card-thumb g7"><div class="n-badge">N</div><div class="card-label">Iron Coast</div></div></div>
+        <div class="card"><div class="card-thumb g19"><div class="n-badge">N</div><div class="card-label">Skyline</div></div></div>
+      </div></div>
+      <button class="scroll-btn right" onclick="scrollRow(this,1)">&#8250;</button>
+    </div>
+  </div>
+
+  <!-- My List -->
+  <div class="row">
+    <div class="row-title">My List</div>
+    <div class="cards-wrap">
+      <button class="scroll-btn left" onclick="scrollRow(this,-1)">&#8249;</button>
+      <div class="cards-outer"><div class="cards" id="myListCards">
+        <div class="card" data-title="Dark Horizon" onclick="openModal('Dark Horizon')"><div class="card-thumb g1"><div class="n-badge">N</div><div class="card-label">Dark Horizon</div></div></div>
+        <div class="card" data-title="Echo Chamber" onclick="openModal('Echo Chamber')"><div class="card-thumb g8"><div class="n-badge">N</div><div class="card-label">Echo Chamber</div></div></div>
+        <div class="card" data-title="Glass City" onclick="openModal('Glass City')"><div class="card-thumb g16"><div class="n-badge">N</div><div class="card-label">Glass City</div></div></div>
+        <div class="card" data-title="Void Walker" onclick="openModal('Void Walker')"><div class="card-thumb g13"><div class="n-badge">N</div><div class="card-label">Void Walker</div></div></div>
+      </div></div>
+      <button class="scroll-btn right" onclick="scrollRow(this,1)">&#8250;</button>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<!-- FOOTER -->
+<footer>
+  <p style="margin-bottom:20px">Questions? Call 1-844-505-2993</p>
+  <div class="footer-grid">
+    <a href="#">FAQ</a><a href="#">Help Centre</a><a href="#">Account</a><a href="#">Media Centre</a>
+    <a href="#">Investor Relations</a><a href="#">Jobs</a><a href="#">Ways to Watch</a><a href="#">Terms of Use</a>
+    <a href="#">Privacy</a><a href="#">Cookie Preferences</a><a href="#">Corporate Info</a><a href="#">Contact Us</a>
+    <a href="#">Speed Test</a><a href="#">Legal Notices</a><a href="#">Only on AniFlix</a><a href="#">Gift Cards</a>
+  </div>
+  <div class="svc-code">Service Code</div>
+  <p style="margin-top:12px">AniFlix &copy; 2025</p>
+</footer>
+
+<!-- CARD HOVER TOOLTIP (body-level, avoids overflow clipping) -->
+<div id="card-tooltip"></div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-overlay" id="adminPanel">
+  <div class="admin-header">
+    <span class="admin-logo">ANIFLIX</span>
+    <span class="admin-badge">ADMIN</span>
+    <div class="admin-header-right">
+      <span>console.aniflix.internal</span>
+      <div class="profile-pic" style="background:#333;font-size:12px">K</div>
+      <button class="admin-close-btn" onclick="closeAdmin()">✕ Exit Admin</button>
+    </div>
+  </div>
+  <div class="admin-body">
+    <div class="admin-sidebar">
+      <div class="admin-nav-section">Main</div>
+      <div class="admin-nav-item active" onclick="adminTab('dashboard',this)"><span class="admin-nav-icon">📊</span>Dashboard</div>
+      <div class="admin-nav-item" onclick="adminTab('content',this)"><span class="admin-nav-icon">🎬</span>Content</div>
+      <div class="admin-nav-item" onclick="adminTab('users',this)"><span class="admin-nav-icon">👥</span>Users</div>
+      <div class="admin-nav-item" onclick="adminTab('analytics',this)"><span class="admin-nav-icon">📈</span>Analytics</div>
+      <div class="admin-divider"></div>
+      <div class="admin-nav-section">System</div>
+      <div class="admin-nav-item" onclick="adminTab('settings',this)"><span class="admin-nav-icon">⚙️</span>Settings</div>
+      <div class="admin-nav-item" onclick="adminTab('logs',this)"><span class="admin-nav-icon">📋</span>Logs</div>
+    </div>
+
+    <div class="admin-main">
+
+      <!-- DASHBOARD -->
+      <div class="admin-tab active" id="tab-dashboard">
+        <div class="admin-page-title">Dashboard</div>
+        <div class="admin-page-sub">Live overview — updated every 30 seconds</div>
+        <div class="kpi-grid">
+          <div class="kpi-card kpi-red">
+            <div class="kpi-label">Active Subscribers</div>
+            <div class="kpi-value">238.4M</div>
+            <div class="kpi-delta up">↑ 2.1% this month</div>
+            <div class="kpi-spark">
+              <div class="kpi-spark-bar" style="height:40%;background:#E50914"></div>
+              <div class="kpi-spark-bar" style="height:55%;background:#E50914"></div>
+              <div class="kpi-spark-bar" style="height:48%;background:#E50914"></div>
+              <div class="kpi-spark-bar" style="height:62%;background:#E50914"></div>
+              <div class="kpi-spark-bar" style="height:70%;background:#E50914"></div>
+              <div class="kpi-spark-bar" style="height:80%;background:#E50914"></div>
+              <div class="kpi-spark-bar" style="height:100%;background:#E50914"></div>
+            </div>
+          </div>
+          <div class="kpi-card kpi-green">
+            <div class="kpi-label">Concurrent Streams</div>
+            <div class="kpi-value">14.2M</div>
+            <div class="kpi-delta up">↑ Peak: 19.8M at 9pm</div>
+            <div class="kpi-spark">
+              <div class="kpi-spark-bar" style="height:30%;background:#46d369"></div>
+              <div class="kpi-spark-bar" style="height:60%;background:#46d369"></div>
+              <div class="kpi-spark-bar" style="height:90%;background:#46d369"></div>
+              <div class="kpi-spark-bar" style="height:100%;background:#46d369"></div>
+              <div class="kpi-spark-bar" style="height:75%;background:#46d369"></div>
+              <div class="kpi-spark-bar" style="height:55%;background:#46d369"></div>
+              <div class="kpi-spark-bar" style="height:72%;background:#46d369"></div>
+            </div>
+          </div>
+          <div class="kpi-card kpi-blue">
+            <div class="kpi-label">Content Library</div>
+            <div class="kpi-value">17,293</div>
+            <div class="kpi-delta up">↑ 48 added this week</div>
+            <div class="kpi-spark">
+              <div class="kpi-spark-bar" style="height:50%;background:#4facfe"></div>
+              <div class="kpi-spark-bar" style="height:60%;background:#4facfe"></div>
+              <div class="kpi-spark-bar" style="height:70%;background:#4facfe"></div>
+              <div class="kpi-spark-bar" style="height:80%;background:#4facfe"></div>
+              <div class="kpi-spark-bar" style="height:88%;background:#4facfe"></div>
+              <div class="kpi-spark-bar" style="height:94%;background:#4facfe"></div>
+              <div class="kpi-spark-bar" style="height:100%;background:#4facfe"></div>
+            </div>
+          </div>
+          <div class="kpi-card kpi-gold">
+            <div class="kpi-label">MRR</div>
+            <div class="kpi-value">$3.57B</div>
+            <div class="kpi-delta up">↑ 4.8% vs last month</div>
+            <div class="kpi-spark">
+              <div class="kpi-spark-bar" style="height:60%;background:#f7971e"></div>
+              <div class="kpi-spark-bar" style="height:65%;background:#f7971e"></div>
+              <div class="kpi-spark-bar" style="height:72%;background:#f7971e"></div>
+              <div class="kpi-spark-bar" style="height:78%;background:#f7971e"></div>
+              <div class="kpi-spark-bar" style="height:85%;background:#f7971e"></div>
+              <div class="kpi-spark-bar" style="height:92%;background:#f7971e"></div>
+              <div class="kpi-spark-bar" style="height:100%;background:#f7971e"></div>
+            </div>
+          </div>
+        </div>
+        <div class="admin-3col">
+          <div class="admin-card">
+            <div class="admin-card-hd"><span class="admin-card-title">Recent Activity</span><span style="font-size:12px;color:#46d369">● Live</span></div>
+            <div class="admin-card-body">
+              <div class="act-item"><div class="act-dot g"></div><div><div class="act-text">Dark Horizon S3 trailer published to all regions</div><div class="act-time">2 min ago</div></div></div>
+              <div class="act-item"><div class="act-dot r"></div><div><div class="act-text">CDN outage in AP-Southeast-2 — 3,200 streams affected</div><div class="act-time">11 min ago</div></div></div>
+              <div class="act-item"><div class="act-dot b"></div><div><div class="act-text">New title "Parallel" went live — 240K views in first hour</div><div class="act-time">34 min ago</div></div></div>
+              <div class="act-item"><div class="act-dot g"></div><div><div class="act-text">Recommendation model retrained with June dataset</div><div class="act-time">1 hr ago</div></div></div>
+              <div class="act-item"><div class="act-dot o"></div><div><div class="act-text">Price update queued for 14 markets — pending legal review</div><div class="act-time">2 hr ago</div></div></div>
+              <div class="act-item"><div class="act-dot g"></div><div><div class="act-text">Void Walker S3 renewal greenlit by Content team</div><div class="act-time">4 hr ago</div></div></div>
+              <div class="act-item"><div class="act-dot r"></div><div><div class="act-text">User report spike: playback bug on Samsung Tizen 6.0</div><div class="act-time">5 hr ago</div></div></div>
+            </div>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-hd"><span class="admin-card-title">Top Titles Today</span></div>
+            <div class="admin-card-body padded" style="padding-top:12px">
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>Dark Horizon</span><span style="color:#aaa">4.2M</span></div><div class="progress-admin"><div class="progress-admin-fill" style="width:100%;background:#E50914"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>Nexus Protocol</span><span style="color:#aaa">3.7M</span></div><div class="progress-admin"><div class="progress-admin-fill" style="width:88%;background:#4facfe"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>Void Walker</span><span style="color:#aaa">2.9M</span></div><div class="progress-admin"><div class="progress-admin-fill" style="width:69%;background:#8f94fb"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>Storm Protocol</span><span style="color:#aaa">2.1M</span></div><div class="progress-admin"><div class="progress-admin-fill" style="width:50%;background:#4facfe"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>Glass City</span><span style="color:#aaa">1.8M</span></div><div class="progress-admin"><div class="progress-admin-fill" style="width:43%;background:#c06c84"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>Crimson Isle</span><span style="color:#aaa">1.4M</span></div><div class="progress-admin"><div class="progress-admin-fill" style="width:33%;background:#870000"></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTENT -->
+      <div class="admin-tab" id="tab-content">
+        <div class="admin-page-title">Content Library</div>
+        <div class="admin-page-sub">Manage titles, availability, and metadata</div>
+        <div class="admin-card">
+          <div class="admin-card-hd">
+            <span class="admin-card-title">All Titles <span style="color:#555;font-weight:400;font-size:12px">(17,293)</span></span>
+            <div style="display:flex;gap:10px;align-items:center">
+              <input class="admin-search" type="text" placeholder="Search titles..." oninput="filterContent(this.value)" id="contentSearch">
+              <button class="admin-btn" onclick="openAddForm()">+ Add Title</button>
+            </div>
+          </div>
+          <div class="admin-card-body">
+            <table class="admin-table">
+              <thead><tr><th>Title</th><th>Type</th><th>Genre</th><th>Rating</th><th>Views (30d)</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="contentTbody">
+                <tr data-title="dark horizon"><td><div style="display:flex;align-items:center;gap:10px"><div class="tbl-thumb g1">⚔</div>Dark Horizon</div></td><td>Series</td><td>Thriller</td><td>TV-MA</td><td>41.2M</td><td><span class="pill pill-green">Active</span></td><td><button class="tbl-btn" onclick="editRow(this)">Edit</button><button class="tbl-btn" onclick="toggleFeature(this)">Deactivate</button><button class="tbl-btn del" onclick="deleteContentRow(this)">Delete</button></td></tr>
+                <tr data-title="nexus protocol"><td><div style="display:flex;align-items:center;gap:10px"><div class="tbl-thumb g3">🤖</div>Nexus Protocol</div></td><td>Series</td><td>Sci-Fi</td><td>TV-14</td><td>36.8M</td><td><span class="pill pill-green">Active</span></td><td><button class="tbl-btn" onclick="editRow(this)">Edit</button><button class="tbl-btn" onclick="toggleFeature(this)">Deactivate</button><button class="tbl-btn del" onclick="deleteContentRow(this)">Delete</button></td></tr>
+                <tr data-title="void walker"><td><div style="display:flex;align-items:center;gap:10px"><div class="tbl-thumb g13">✨</div>Void Walker</div></td><td>Series</td><td>Fantasy</td><td>TV-MA</td><td>28.1M</td><td><span class="pill pill-green">Active</span></td><td><button class="tbl-btn" onclick="editRow(this)">Edit</button><button class="tbl-btn" onclick="toggleFeature(this)">Deactivate</button><button class="tbl-btn del" onclick="deleteContentRow(this)">Delete</button></td></tr>
+                <tr data-title="storm protocol"><td><div style="display:flex;align-items:center;gap:10px"><div class="tbl-thumb g11">⚡</div>Storm Protocol</div></td><td>Series</td><td>Action</td><td>TV-14</td><td>22.4M</td><td><span class="pill pill-green">Active</span></td><td><button class="tbl-btn" onclick="editRow(this)">Edit</button><button class="tbl-btn" onclick="toggleFeature(this)">Deactivate</button><button class="tbl-btn del" onclick="deleteContentRow(this)">Delete</button></td></tr>
+                <tr data-title="glass city"><td><div style="display:flex;align-items:center;gap:10px"><div class="tbl-thumb g16">🌆</div>Glass City</div></td><td>Series</td><td>Crime</td><td>TV-MA</td><td>19.7M</td><td><span class="pill pill-green">Active</span></td><td><button class="tbl-btn" onclick="editRow(this)">Edit</button><button class="tbl-btn" onclick="toggleFeature(this)">Deactivate</button><button class="tbl-btn del" onclick="deleteContentRow(this)">Delete</button></td></tr>
+                <tr data-title="crimson isle"><td><div style="display:flex;align-items:center;gap:10px"><div class="tbl-thumb g5">🏝</div>Crimson Isle</div></td><td>Series</td><td>Horror</td><td>R</td><td>15.3M</td><td><span class="pill pill-green">Active</span></td><td><button class="tbl-btn" onclick="editRow(this)">Edit</button><button class="tbl-btn" onclick="toggleFeature(this)">Deactivate</button><button class="tbl-btn del" onclick="deleteContentRow(this)">Delete</button></td></tr>
+                <tr data-title="echo chamber"><td><div style="display:flex;align-items:center;gap:10px"><div class="tbl-thumb g8">🧠</div>Echo Chamber</div></td><td>Series</td><td>Drama</td><td>TV-MA</td><td>13.9M</td><td><span class="pill pill-green">Active</span></td><td><button class="tbl-btn" onclick="editRow(this)">Edit</button><button class="tbl-btn" onclick="toggleFeature(this)">Deactivate</button><button class="tbl-btn del" onclick="deleteContentRow(this)">Delete</button></td></tr>
+                <tr data-title="ember falls"><td><div style="display:flex;align-items:center;gap:10px"><div class="tbl-thumb g20">🔥</div>Ember Falls</div></td><td>Series</td><td>Romance</td><td>TV-14</td><td>11.2M</td><td><span class="pill pill-green">Active</span></td><td><button class="tbl-btn" onclick="editRow(this)">Edit</button><button class="tbl-btn" onclick="toggleFeature(this)">Deactivate</button><button class="tbl-btn del" onclick="deleteContentRow(this)">Delete</button></td></tr>
+                <tr data-title="the cascade"><td><div style="display:flex;align-items:center;gap:10px"><div class="tbl-thumb g2">🌊</div>The Cascade</div></td><td>Series</td><td>Mystery</td><td>TV-MA</td><td>3.1M</td><td><span class="pill pill-blue">New</span></td><td><button class="tbl-btn" onclick="editRow(this)">Edit</button><button class="tbl-btn" onclick="toggleFeature(this)">Deactivate</button><button class="tbl-btn del" onclick="deleteContentRow(this)">Delete</button></td></tr>
+                <tr data-title="parallel"><td><div style="display:flex;align-items:center;gap:10px"><div class="tbl-thumb g14">🔀</div>Parallel</div></td><td>Film</td><td>Sci-Fi</td><td>PG-13</td><td>2.4M</td><td><span class="pill pill-blue">New</span></td><td><button class="tbl-btn" onclick="editRow(this)">Edit</button><button class="tbl-btn" onclick="toggleFeature(this)">Deactivate</button><button class="tbl-btn del" onclick="deleteContentRow(this)">Delete</button></td></tr>
+                <tr data-title="arctic watch"><td><div style="display:flex;align-items:center;gap:10px"><div class="tbl-thumb g6">🧊</div>Arctic Watch</div></td><td>Documentary</td><td>Nature</td><td>TV-14</td><td>890K</td><td><span class="pill pill-orange">Pending</span></td><td><button class="tbl-btn" onclick="editRow(this)">Edit</button><button class="tbl-btn">Approve</button><button class="tbl-btn del" onclick="deleteContentRow(this)">Reject</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- USERS -->
+      <div class="admin-tab" id="tab-users">
+        <div class="admin-page-title">User Management</div>
+        <div class="admin-page-sub">Subscriber accounts, plans, and activity</div>
+        <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+          <div class="kpi-card kpi-green"><div class="kpi-label">Standard Plan</div><div class="kpi-value">98.1M</div><div class="kpi-delta up">41% of base</div></div>
+          <div class="kpi-card kpi-blue"><div class="kpi-label">Premium Plan</div><div class="kpi-value">112.4M</div><div class="kpi-delta up">47% of base</div></div>
+          <div class="kpi-card kpi-gold"><div class="kpi-label">Basic Plan</div><div class="kpi-value">27.9M</div><div class="kpi-delta dn">12% of base</div></div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-hd">
+            <span class="admin-card-title">Recent Users</span>
+            <input class="admin-search" type="text" placeholder="Search users...">
+          </div>
+          <div class="admin-card-body">
+            <table class="admin-table">
+              <thead><tr><th>User</th><th>Plan</th><th>Country</th><th>Watch Time</th><th>Last Active</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                <tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;background:#E50914;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">K</div>klixyreno@gmail.com</div></td><td>Premium</td><td>🇺🇸 US</td><td>142h / mo</td><td>Just now</td><td><span class="pill pill-green">Active</span></td><td><button class="tbl-btn">View</button><button class="tbl-btn del">Suspend</button></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;background:#4facfe;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">A</div>alex.morgan@email.com</div></td><td>Standard</td><td>🇬🇧 UK</td><td>88h / mo</td><td>3 hr ago</td><td><span class="pill pill-green">Active</span></td><td><button class="tbl-btn">View</button><button class="tbl-btn del">Suspend</button></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;background:#46d369;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">S</div>sarah.j.chen@proton.me</div></td><td>Premium</td><td>🇨🇦 CA</td><td>211h / mo</td><td>1 hr ago</td><td><span class="pill pill-green">Active</span></td><td><button class="tbl-btn">View</button><button class="tbl-btn del">Suspend</button></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;background:#f7971e;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">M</div>m.okafor@outlook.com</div></td><td>Basic</td><td>🇳🇬 NG</td><td>22h / mo</td><td>2 days ago</td><td><span class="pill pill-orange">Inactive</span></td><td><button class="tbl-btn">View</button><button class="tbl-btn del">Suspend</button></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;background:#c06c84;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">L</div>luna.v@fastmail.net</div></td><td>Standard</td><td>🇩🇪 DE</td><td>67h / mo</td><td>12 hr ago</td><td><span class="pill pill-green">Active</span></td><td><button class="tbl-btn">View</button><button class="tbl-btn del">Suspend</button></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;background:#870000;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">R</div>r.vasquez@gmail.com</div></td><td>Basic</td><td>🇲🇽 MX</td><td>14h / mo</td><td>5 days ago</td><td><span class="pill pill-red">Suspended</span></td><td><button class="tbl-btn">View</button><button class="tbl-btn">Restore</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALYTICS -->
+      <div class="admin-tab" id="tab-analytics">
+        <div class="admin-page-title">Analytics</div>
+        <div class="admin-page-sub">Viewership, engagement, and growth metrics</div>
+        <div class="admin-2col">
+          <div class="admin-card">
+            <div class="admin-card-hd"><span class="admin-card-title">Daily Streams — Last 12 Months</span></div>
+            <div class="admin-card-body padded">
+              <div class="bar-chart-wrap">
+                <div class="bar-col"><div class="bar-col-val">9.1M</div><div class="bar-fill" style="height:46%;background:linear-gradient(to top,#c94b4b,#E50914)"></div><div class="bar-col-label">Jul</div></div>
+                <div class="bar-col"><div class="bar-col-val">9.8M</div><div class="bar-fill" style="height:49%;background:linear-gradient(to top,#c94b4b,#E50914)"></div><div class="bar-col-label">Aug</div></div>
+                <div class="bar-col"><div class="bar-col-val">11.2M</div><div class="bar-fill" style="height:56%;background:linear-gradient(to top,#c94b4b,#E50914)"></div><div class="bar-col-label">Sep</div></div>
+                <div class="bar-col"><div class="bar-col-val">12.4M</div><div class="bar-fill" style="height:62%;background:linear-gradient(to top,#c94b4b,#E50914)"></div><div class="bar-col-label">Oct</div></div>
+                <div class="bar-col"><div class="bar-col-val">14.1M</div><div class="bar-fill" style="height:71%;background:linear-gradient(to top,#c94b4b,#E50914)"></div><div class="bar-col-label">Nov</div></div>
+                <div class="bar-col"><div class="bar-col-val">19.8M</div><div class="bar-fill" style="height:100%;background:linear-gradient(to top,#c94b4b,#E50914)"></div><div class="bar-col-label">Dec</div></div>
+                <div class="bar-col"><div class="bar-col-val">17.2M</div><div class="bar-fill" style="height:87%;background:linear-gradient(to top,#c94b4b,#E50914)"></div><div class="bar-col-label">Jan</div></div>
+                <div class="bar-col"><div class="bar-col-val">15.4M</div><div class="bar-fill" style="height:78%;background:linear-gradient(to top,#c94b4b,#E50914)"></div><div class="bar-col-label">Feb</div></div>
+                <div class="bar-col"><div class="bar-col-val">14.9M</div><div class="bar-fill" style="height:75%;background:linear-gradient(to top,#c94b4b,#E50914)"></div><div class="bar-col-label">Mar</div></div>
+                <div class="bar-col"><div class="bar-col-val">13.7M</div><div class="bar-fill" style="height:69%;background:linear-gradient(to top,#c94b4b,#E50914)"></div><div class="bar-col-label">Apr</div></div>
+                <div class="bar-col"><div class="bar-col-val">13.1M</div><div class="bar-fill" style="height:66%;background:linear-gradient(to top,#c94b4b,#E50914)"></div><div class="bar-col-label">May</div></div>
+                <div class="bar-col"><div class="bar-col-val">14.2M</div><div class="bar-fill" style="height:72%;background:linear-gradient(to top,#c94b4b,#E50914)"></div><div class="bar-col-label">Jun</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-hd"><span class="admin-card-title">Subscribers by Region</span></div>
+            <div class="admin-card-body padded">
+              <div style="display:flex;flex-direction:column;gap:14px;margin-top:6px">
+                <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>North America</span><span style="color:#aaa">82.4M</span></div><div class="progress-admin"><div class="progress-admin-fill" style="width:100%;background:#E50914"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>Europe &amp; Middle East</span><span style="color:#aaa">76.8M</span></div><div class="progress-admin"><div class="progress-admin-fill" style="width:93%;background:#4facfe"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>Latin America</span><span style="color:#aaa">44.6M</span></div><div class="progress-admin"><div class="progress-admin-fill" style="width:54%;background:#f7971e"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>Asia Pacific</span><span style="color:#aaa">34.6M</span></div><div class="progress-admin"><div class="progress-admin-fill" style="width:42%;background:#46d369"></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="admin-2col">
+          <div class="admin-card">
+            <div class="admin-card-hd"><span class="admin-card-title">Completion Rate by Genre</span></div>
+            <div class="admin-card-body padded">
+              <div style="display:flex;flex-direction:column;gap:11px;margin-top:4px">
+                <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>Thriller / Mystery</span><span style="color:#46d369">87%</span></div><div class="progress-admin"><div class="progress-admin-fill" style="width:87%;background:#46d369"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>Sci-Fi / Fantasy</span><span style="color:#4facfe">82%</span></div><div class="progress-admin"><div class="progress-admin-fill" style="width:82%;background:#4facfe"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>Action / Adventure</span><span style="color:#f7971e">78%</span></div><div class="progress-admin"><div class="progress-admin-fill" style="width:78%;background:#f7971e"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>Drama</span><span style="color:#c06c84">73%</span></div><div class="progress-admin"><div class="progress-admin-fill" style="width:73%;background:#c06c84"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>Horror</span><span style="color:#E50914">61%</span></div><div class="progress-admin"><div class="progress-admin-fill" style="width:61%;background:#E50914"></div></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-hd"><span class="admin-card-title">Device Breakdown</span></div>
+            <div class="admin-card-body padded">
+              <div style="display:flex;flex-direction:column;gap:11px;margin-top:4px">
+                <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>📺 Smart TV</span><span style="color:#aaa">38%</span></div><div class="progress-admin"><div class="progress-admin-fill" style="width:38%;background:#E50914"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>📱 Mobile</span><span style="color:#aaa">29%</span></div><div class="progress-admin"><div class="progress-admin-fill" style="width:29%;background:#4facfe"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>💻 Desktop</span><span style="color:#aaa">18%</span></div><div class="progress-admin"><div class="progress-admin-fill" style="width:18%;background:#46d369"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>🎮 Game Console</span><span style="color:#aaa">11%</span></div><div class="progress-admin"><div class="progress-admin-fill" style="width:11%;background:#f7971e"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span>📡 Other</span><span style="color:#aaa">4%</span></div><div class="progress-admin"><div class="progress-admin-fill" style="width:4%;background:#555"></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="admin-tab" id="tab-settings">
+        <div class="admin-page-title">Settings</div>
+        <div class="admin-page-sub">Platform configuration and feature flags</div>
+        <div class="admin-card" style="max-width:640px">
+          <div class="admin-card-hd"><span class="admin-card-title">Feature Flags</span></div>
+          <div class="admin-card-body padded">
+            <div style="display:flex;flex-direction:column;gap:0">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #222">
+                <div><div style="font-size:14px;margin-bottom:3px">Shuffle Play</div><div style="font-size:12px;color:#555">Auto-play a random episode from My List</div></div>
+                <div style="width:40px;height:22px;background:#46d369;border-radius:11px;cursor:pointer;position:relative;flex-shrink:0" onclick="toggleFlag(this)"><div style="position:absolute;right:2px;top:2px;width:18px;height:18px;background:#fff;border-radius:50%"></div></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #222">
+                <div><div style="font-size:14px;margin-bottom:3px">Top 10 Row</div><div style="font-size:12px;color:#555">Show daily top 10 rankings on home screen</div></div>
+                <div style="width:40px;height:22px;background:#46d369;border-radius:11px;cursor:pointer;position:relative;flex-shrink:0" onclick="toggleFlag(this)"><div style="position:absolute;right:2px;top:2px;width:18px;height:18px;background:#fff;border-radius:50%"></div></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #222">
+                <div><div style="font-size:14px;margin-bottom:3px">Spatial Audio (Beta)</div><div style="font-size:12px;color:#555">Dolby Atmos support on compatible devices</div></div>
+                <div style="width:40px;height:22px;background:#46d369;border-radius:11px;cursor:pointer;position:relative;flex-shrink:0" onclick="toggleFlag(this)"><div style="position:absolute;right:2px;top:2px;width:18px;height:18px;background:#fff;border-radius:50%"></div></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #222">
+                <div><div style="font-size:14px;margin-bottom:3px">AI Synopsis (Experiment)</div><div style="font-size:12px;color:#555">Generate personalised descriptions per user</div></div>
+                <div style="width:40px;height:22px;background:#333;border-radius:11px;cursor:pointer;position:relative;flex-shrink:0" onclick="toggleFlag(this)"><div style="position:absolute;left:2px;top:2px;width:18px;height:18px;background:#888;border-radius:50%"></div></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0">
+                <div><div style="font-size:14px;margin-bottom:3px">Maintenance Mode</div><div style="font-size:12px;color:#555">Show maintenance banner to all users</div></div>
+                <div style="width:40px;height:22px;background:#333;border-radius:11px;cursor:pointer;position:relative;flex-shrink:0" onclick="toggleFlag(this)"><div style="position:absolute;left:2px;top:2px;width:18px;height:18px;background:#888;border-radius:50%"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOGS -->
+      <div class="admin-tab" id="tab-logs">
+        <div class="admin-page-title">System Logs</div>
+        <div class="admin-page-sub">Real-time event and error log stream</div>
+        <div class="admin-card">
+          <div class="admin-card-hd"><span class="admin-card-title">Log Stream</span><span style="font-size:12px;color:#46d369">● Live</span></div>
+          <div class="admin-card-body padded" style="font-family:monospace;font-size:12px;line-height:2;color:#aaa;max-height:500px;overflow-y:auto" id="logStream">
+            <div><span style="color:#555">[2025-06-05 14:32:01]</span> <span style="color:#46d369">INFO </span> CDN health check passed — all 47 PoPs nominal</div>
+            <div><span style="color:#555">[2025-06-05 14:31:58]</span> <span style="color:#46d369">INFO </span> Transcode job #88241 complete — Parallel (4K HDR)</div>
+            <div><span style="color:#555">[2025-06-05 14:31:44]</span> <span style="color:#f7971e">WARN </span> Rate limit triggered — user id:4491028 (5 req/s)</div>
+            <div><span style="color:#555">[2025-06-05 14:31:39]</span> <span style="color:#46d369">INFO </span> Recommendation batch recomputed — 238M profiles</div>
+            <div><span style="color:#555">[2025-06-05 14:30:55]</span> <span style="color:#E50914">ERROR</span> AP-SE-2 origin timeout — failover to AP-SE-1 activated</div>
+            <div><span style="color:#555">[2025-06-05 14:30:22]</span> <span style="color:#46d369">INFO </span> Subtitle upload validated — Dark Horizon S3E1 (12 langs)</div>
+            <div><span style="color:#555">[2025-06-05 14:29:47]</span> <span style="color:#46d369">INFO </span> User klixyreno@gmail.com authenticated — Premium plan</div>
+            <div><span style="color:#555">[2025-06-05 14:28:31]</span> <span style="color:#f7971e">WARN </span> Encoding queue depth 2,841 — above warning threshold</div>
+            <div><span style="color:#555">[2025-06-05 14:27:14]</span> <span style="color:#46d369">INFO </span> A/B test "hero-banner-v3" launched — 5% of US traffic</div>
+            <div><span style="color:#555">[2025-06-05 14:26:02]</span> <span style="color:#E50914">ERROR</span> Payment gateway timeout — 112 retries queued</div>
+            <div><span style="color:#555">[2025-06-05 14:25:48]</span> <span style="color:#46d369">INFO </span> Database replica lag 0ms — all replicas in sync</div>
+            <div><span style="color:#555">[2025-06-05 14:24:33]</span> <span style="color:#46d369">INFO </span> Content review complete — "Arctic Watch" approved</div>
+            <div><span style="color:#555">[2025-06-05 14:23:19]</span> <span style="color:#f7971e">WARN </span> Disk usage on enc-worker-07: 87% — schedule cleanup</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /admin-main -->
+  </div><!-- /admin-body -->
+
+  <!-- FORM OVERLAY (inside admin so z-index stacks correctly) -->
+  <div class="form-overlay" id="formOverlay" onclick="if(event.target===this)closeForm()">
+    <div class="form-modal">
+      <div class="form-modal-hd">
+        <span class="form-modal-title" id="formModalHeading">Add Title</span>
+        <button class="form-modal-close" onclick="closeForm()">✕</button>
+      </div>
+      <div class="form-body">
+        <!-- Title -->
+        <div class="form-field">
+          <label class="form-label">Title *</label>
+          <input class="form-input" id="formTitle" type="text" placeholder="e.g. Dark Horizon" autocomplete="off">
+        </div>
+
+        <!-- Thumbnail + video side by side -->
+        <div class="form-row">
+          <div class="form-field">
+            <label class="form-label">Thumbnail Image</label>
+            <div class="file-drop-box" id="imgDropBox" onclick="document.getElementById('formImage').click()" ondragover="event.preventDefault()" ondrop="dropImage(event)">
+              <img id="imgPreview" src="" alt="" style="display:none">
+              <div class="file-drop-placeholder" id="imgPlaceholder">
+                <div class="file-drop-icon">🖼</div>
+                <div>Click or drag image</div>
+                <div class="file-drop-hint">JPG · PNG · WEBP</div>
+              </div>
+            </div>
+            <input type="file" id="formImage" accept="image/*" style="display:none" onchange="handleImageUpload(this)">
+          </div>
+          <div class="form-field">
+            <label class="form-label">Video File</label>
+            <div class="file-drop-box file-drop-video" id="videoDropBox" onclick="document.getElementById('formVideo').click()" ondragover="event.preventDefault()" ondrop="dropVideo(event)">
+              <div id="videoFileInfo" style="display:none;text-align:center">
+                <div class="file-drop-icon">🎬</div>
+                <div class="video-file-name" id="videoFileName"></div>
+                <div class="file-drop-hint" id="videoFileSize"></div>
+              </div>
+              <div class="file-drop-placeholder" id="videoPlaceholder">
+                <div class="file-drop-icon">▶</div>
+                <div>Click or drag video</div>
+                <div class="file-drop-hint">MKV · MP4 · AVI · WEBM</div>
+              </div>
+            </div>
+            <input type="file" id="formVideo" accept=".mkv,.mp4,.avi,.webm,.mov" style="display:none" onchange="handleVideoUpload(this)">
+          </div>
+        </div>
+
+        <!-- Type + Genre -->
+        <div class="form-row">
+          <div class="form-field">
+            <label class="form-label">Type</label>
+            <select class="form-select" id="formType">
+              <option>Series</option><option>Film</option>
+              <option>Documentary</option><option>Limited Series</option><option>Special</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Genre</label>
+            <input class="form-input" id="formGenre" type="text" placeholder="e.g. Thriller, Drama">
+          </div>
+        </div>
+
+        <!-- Rating + Views + Status -->
+        <div class="form-row">
+          <div class="form-field">
+            <label class="form-label">Content Rating</label>
+            <select class="form-select" id="formRating">
+              <option>TV-MA</option><option>TV-14</option><option>TV-PG</option>
+              <option>TV-G</option><option>R</option><option>PG-13</option><option>PG</option><option>G</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Views (30d)</label>
+            <input class="form-input" id="formViews" type="text" placeholder="e.g. 4.2M">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label class="form-label">Status</label>
+            <select class="form-select" id="formStatus">
+              <option>Active</option><option>Inactive</option>
+              <option>Pending</option><option>New</option>
+            </select>
+          </div>
+        </div>
+        <!-- Episodes -->
+        <div class="form-field">
+          <div class="form-ep-header">
+            <label class="form-label">Episodes — Season 1</label>
+            <button type="button" class="form-ep-add-btn" onclick="addEpisodeRow()">+ Add</button>
+          </div>
+          <div id="formEpList"></div>
+        </div>
+      </div>
+      <div class="form-footer">
+        <button class="form-btn-cancel" onclick="closeForm()">Cancel</button>
+        <button class="form-btn-save" onclick="saveForm()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="form-toast" id="adminToast"></div>
+
+</div><!-- /adminPanel -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeOnBg(event)">
+  <div class="modal">
+    <div class="modal-video">
+      <div class="modal-video-bg" id="modalBg">
+        <span id="modalArt">⚔</span>
+      </div>
+      <div class="modal-gradient"></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-bottom-hero">
+        <div class="modal-title" id="modalTitle"></div>
+        <div class="modal-btns">
+          <button class="btn btn-play" id="modalPlayBtn" onclick="playCurrentTitle()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="black"><polygon points="5,3 19,12 5,21"/></svg>
+            Play
+          </button>
+          <button class="btn btn-info" id="modalMyListBtn" onclick="toggleMyListFromModal()">+ My List</button>
+          <button class="btn btn-info" style="padding:12px 14px">👍</button>
+          <button class="btn btn-info" style="padding:12px 14px">👎</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div>
+        <div class="modal-meta">
+          <span class="match-pct" id="modalMatch"></span>
+          <span id="modalYear"></span>
+          <span class="age-badge" id="modalAge"></span>
+          <span id="modalSeasons"></span>
+          <span style="border:1px solid #444;padding:1px 5px;font-size:11px">HD</span>
+        </div>
+        <p class="modal-desc" id="modalDesc"></p>
+      </div>
+      <div class="modal-side" id="modalSide"></div>
+    </div>
+    <div class="ep-section">
+      <div class="ep-title">Episodes</div>
+      <div class="season-tabs" id="seasonTabs"></div>
+      <div id="epList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- VIDEO PLAYER -->
+<div class="vp-overlay" id="vpOverlay">
+  <div class="vp-top">
+    <button class="vp-back" onclick="closePlayer()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+      Back
+    </button>
+    <span class="vp-title-text" id="vpTitleText"></span>
+  </div>
+  <video id="vpVideo" class="vp-video" controls>
+    Your browser does not support this video format.
+  </video>
+  <div class="vp-no-video" id="vpNoVideo">
+    <div class="vp-no-video-icon">▶</div>
+    <div class="vp-no-video-msg">No video file uploaded for this title.</div>
+    <div class="vp-no-video-hint">Go to Admin → Content → Edit to add a video file.</div>
+  </div>
+</div>
+
+<!-- ADMIN PIN MODAL -->
+<div class="pin-overlay" id="pinOverlay">
+  <div class="pin-modal" id="pinModal">
+    <div class="pin-brand">ANIFLIX</div>
+    <div class="pin-heading">Enter Admin PIN</div>
+    <div class="pin-dots" id="pinDots">
+      <span id="pd0"></span><span id="pd1"></span><span id="pd2"></span><span id="pd3"></span>
+    </div>
+    <div class="pin-err" id="pinErr"></div>
+    <div class="pin-grid">
+      <button onclick="pinKey('1')">1</button>
+      <button onclick="pinKey('2')">2</button>
+      <button onclick="pinKey('3')">3</button>
+      <button onclick="pinKey('4')">4</button>
+      <button onclick="pinKey('5')">5</button>
+      <button onclick="pinKey('6')">6</button>
+      <button onclick="pinKey('7')">7</button>
+      <button onclick="pinKey('8')">8</button>
+      <button onclick="pinKey('9')">9</button>
+      <button class="pin-clear" onclick="pinReset()">✕</button>
+      <button onclick="pinKey('0')">0</button>
+      <button class="pin-del" onclick="pinBack()">⌫</button>
+    </div>
+    <button class="pin-cancel-btn" onclick="closePinModal()">Cancel</button>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/modal.js"></script>
+<script src="js/admin.js"></script>
+<script src="js/player.js"></script>
+<script src="js/db.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
