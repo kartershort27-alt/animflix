@@ -200,15 +200,63 @@ function _scanLibrary() {
   return result;
 }
 
-// Merge library + admin shows.json (admin metadata overrides library, but episodeVideos are merged)
+// ── library.json — shows committed to the GitHub repo ────────────────────────
+let _jsonLib = {};
+
+function _loadJsonLibrary() {
+  const libFile = path.join(__dirname, 'library.json');
+  try {
+    const { series = [], movies = [] } = JSON.parse(fs.readFileSync(libFile, 'utf8'));
+    const result = {};
+    movies.forEach(m => {
+      if (!m.title || !m.url) return;
+      result[m.title] = {
+        title: m.title, type: 'Film', age: m.age || 'TV-MA',
+        seasons: 'Film', seasonCount: 0,
+        bg: 'linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)', art: '🎬',
+        desc: m.desc || '', cast: m.cast || '', genres: m.genres || '',
+        mood: m.mood || '', year: m.year || '',
+        imageUrl: m.thumbnail || '', episodes: {},
+        videoUrl: m.url, videoName: m.title + '.mp4'
+      };
+    });
+    series.forEach(s => {
+      if (!s.title || !s.seasons) return;
+      const seasons = {};
+      const epVideos = {};
+      Object.entries(s.seasons).forEach(([sNum, eps]) => {
+        seasons[sNum] = eps.map(e => ({ n: e.ep, t: e.title || ('Episode ' + e.ep), d: e.duration || '—' }));
+        eps.forEach(e => { if (e.url) epVideos['s' + sNum + 'e' + e.ep] = e.url; });
+      });
+      Object.keys(seasons).forEach(n => seasons[n].sort((a, b) => a.n - b.n));
+      const count = Object.keys(seasons).length;
+      const first = Math.min(...Object.keys(seasons).map(Number));
+      const ep1   = seasons[first] && seasons[first][0];
+      result[s.title] = {
+        title: s.title, type: 'Series', age: s.age || 'TV-MA',
+        seasons: count + ' Season' + (count !== 1 ? 's' : ''), seasonCount: count,
+        bg: 'linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)', art: '🎬',
+        desc: s.desc || '', cast: s.cast || '', genres: s.genres || '',
+        mood: s.mood || '', year: s.year || '',
+        imageUrl: s.thumbnail || '',
+        episodes: seasons, episodeVideos: epVideos,
+        videoUrl:  ep1 ? epVideos['s' + first + 'e' + ep1.n] : null,
+        videoName: ep1 ? ep1.t : null
+      };
+    });
+    return result;
+  } catch { return {}; }
+}
+
+// Merge all sources: library.json (GitHub) + folder scan (local) + shows.json (admin edits)
 function _readAll() {
-  const lib   = _libShows;
   const admin = _read();
-  const out   = { ...lib };
+  const out   = { ..._jsonLib, ..._libShows };
   Object.entries(admin).forEach(([title, show]) => {
+    const base = out[title] || {};
     out[title] = {
-      ...(lib[title] || {}), ...show,
-      episodeVideos: { ...(lib[title] && lib[title].episodeVideos || {}), ...(show.episodeVideos || {}) }
+      ...base, ...show,
+      episodeVideos: { ...(base.episodeVideos || {}), ...(show.episodeVideos || {}) }
     };
   });
   return out;
@@ -268,10 +316,12 @@ function _safePath(s) { return String(s).replace(/\.\./g, '').replace(/[^a-zA-Z0
 
 // ── Start ─────────────────────────────────────────────────────────────────────
 app.listen(PORT, () => {
+  _jsonLib  = _loadJsonLibrary();
   _libShows = _scanLibrary();
   _watchLibrary();
-  const s = Object.keys(_libShows).length;
+  const j = Object.keys(_jsonLib).length;
+  const f = Object.keys(_libShows).length;
   console.log(`\n  AniFlix server running → http://localhost:${PORT}`);
-  if (s) console.log(`  Library: ${s} title${s !== 1 ? 's' : ''} loaded from series/ and movies/\n`);
-  else   console.log(`  Library: drop videos into data/series/<Show Name>/ or data/movies/\n`);
+  console.log(`  library.json: ${j} title${j !== 1 ? 's' : ''}`);
+  console.log(`  Local folders: ${f} title${f !== 1 ? 's' : ''}\n`);
 });

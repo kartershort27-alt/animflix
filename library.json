@@ -1,0 +1,32 @@
+{
+  "series": [
+    {
+      "title": "Example Series",
+      "thumbnail": "https://example.com/thumb.jpg",
+      "desc": "Show description here.",
+      "genres": "Action, Drama",
+      "age": "TV-MA",
+      "year": "2025",
+      "seasons": {
+        "1": [
+          { "ep": 1, "title": "Pilot",          "duration": "45m", "url": "https://direct-video-url/s1e1.mp4" },
+          { "ep": 2, "title": "Into the Deep",  "duration": "42m", "url": "https://direct-video-url/s1e2.mp4" }
+        ],
+        "2": [
+          { "ep": 1, "title": "Return",         "duration": "48m", "url": "https://direct-video-url/s2e1.mp4" }
+        ]
+      }
+    }
+  ],
+  "movies": [
+    {
+      "title": "Example Movie",
+      "thumbnail": "https://example.com/movie-thumb.jpg",
+      "desc": "Movie description here.",
+      "genres": "Sci-Fi",
+      "age": "PG-13",
+      "year": "2024",
+      "url": "https://direct-video-url/movie.mp4"
+    }
+  ]
+}
