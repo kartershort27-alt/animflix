@@ -1,7 +1,7 @@
-// AniFlix — custom server backend
-// Set API_BASE to your deployed server URL if running the frontend separately
-// e.g. 'https://aniflix.railway.app'  — leave empty when server serves the files too
-const API_BASE = '';
+const API_BASE  = '';
+const GH_OWNER  = 'kartershort27-alt';
+const GH_REPO   = 'animflix';
+const IS_LOCAL  = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 
 // ── Normalise shows read from the server (arrays stay arrays) ────────────────
 function _normalizeShow(s) {
@@ -16,11 +16,62 @@ function _normalizeShow(s) {
   return s;
 }
 
-// ── Init: SSE stream for real-time updates ───────────────────────────────────
+// ── Convert library.json format → show objects (mirrors server.js _parseLibrary) ──
+function _parseLibrary({ series = [], movies = [] }) {
+  const out = {};
+  movies.forEach(m => {
+    if (!m.title) return;
+    out[m.title] = {
+      title: m.title, type: 'Film', age: m.age || 'TV-MA',
+      seasons: 'Film', seasonCount: 0, match: '98',
+      bg: 'linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)', art: '🎬',
+      desc: m.desc || '', cast: m.cast || '', genres: m.genres || '',
+      mood: m.mood || '', year: m.year || '',
+      imageUrl: m.thumbnail || '', episodes: {},
+      videoUrl: m.url || null, videoName: m.title
+    };
+  });
+  series.forEach(s => {
+    if (!s.title || !s.seasons) return;
+    const seasons = {}, epVideos = {};
+    Object.entries(s.seasons).forEach(([sNum, eps]) => {
+      seasons[sNum] = (eps || []).map(e => ({ n: e.ep, t: e.title || ('Episode ' + e.ep), d: e.duration || '—' }));
+      (eps || []).forEach(e => { if (e.url) epVideos['s' + sNum + 'e' + e.ep] = e.url; });
+    });
+    Object.keys(seasons).forEach(n => seasons[n].sort((a, b) => a.n - b.n));
+    const count = Object.keys(seasons).length;
+    const first = count ? Math.min(...Object.keys(seasons).map(Number)) : 1;
+    const ep1   = seasons[first] && seasons[first][0];
+    out[s.title] = {
+      title: s.title, type: 'Series', age: s.age || 'TV-MA', match: '98',
+      seasons: count + ' Season' + (count !== 1 ? 's' : ''), seasonCount: count,
+      bg: 'linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)', art: '🎬',
+      desc: s.desc || '', cast: s.cast || '', genres: s.genres || '',
+      mood: s.mood || '', year: s.year || '',
+      imageUrl: s.thumbnail || '',
+      episodes: seasons, episodeVideos: epVideos,
+      videoUrl:  ep1 ? (epVideos['s' + first + 'e' + ep1.n] || null) : null,
+      videoName: ep1 ? ep1.t : null
+    };
+  });
+  return out;
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
 function dbInit() {
+  if (IS_LOCAL) {
+    _initSSE();
+  } else {
+    _initGitHubPolling();
+    // Hide server-only controls (admin panel, etc.) on the public site
+    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+  }
+}
+
+// ── Local mode: SSE stream ────────────────────────────────────────────────────
+function _initSSE() {
   const es = new EventSource(API_BASE + '/api/events');
 
-  // Fires once on connect with ALL current shows
   es.addEventListener('init', e => {
     const shows = JSON.parse(e.data);
     Object.values(shows).forEach(s => {
@@ -32,7 +83,6 @@ function dbInit() {
     });
   });
 
-  // Fires when any client saves a show
   es.addEventListener('show_updated', e => {
     const s = _normalizeShow(JSON.parse(e.data));
     CUSTOM_SHOWS[s.title] = s;
@@ -45,7 +95,6 @@ function dbInit() {
     }
   });
 
-  // Fires when any client deletes a show
   es.addEventListener('show_deleted', e => {
     const { title } = JSON.parse(e.data);
     delete CUSTOM_SHOWS[title];
@@ -55,9 +104,43 @@ function dbInit() {
     if (tr) tr.remove();
   });
 
-  es.onerror = () => {
-    // EventSource reconnects automatically — no action needed
-  };
+  es.onerror = () => {};
+}
+
+// ── GitHub Pages mode: poll raw library.json every 60 s ──────────────────────
+const _RAW_LIB = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/main/library.json`;
+let _knownTitles = new Set();
+
+async function _initGitHubPolling() {
+  await _pollLibrary();
+  setInterval(_pollLibrary, 60_000);
+}
+
+async function _pollLibrary() {
+  try {
+    const r = await fetch(_RAW_LIB + '?_=' + Date.now());
+    if (!r.ok) return;
+    const lib   = await r.json();
+    const shows = _parseLibrary(lib);
+
+    // Remove titles that disappeared
+    _knownTitles.forEach(t => {
+      if (!shows[t]) {
+        delete CUSTOM_SHOWS[t];
+        delete titleMedia[t.toLowerCase()];
+        document.querySelectorAll(`.card[data-title="${t}"]`).forEach(c => c.remove());
+      }
+    });
+    _knownTitles = new Set(Object.keys(shows));
+
+    // Add / refresh shows
+    Object.values(shows).forEach(s => {
+      s = _normalizeShow(s);
+      CUSTOM_SHOWS[s.title] = s;
+      _loadMedia(s);
+      _renderCard(s.title);
+    });
+  } catch {}
 }
 
 // ── Populate titleMedia from a show object ───────────────────────────────────
