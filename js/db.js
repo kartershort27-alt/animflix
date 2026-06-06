@@ -1,7 +1,7 @@
 // AniFlix — custom server backend
 // Set API_BASE to your deployed server URL if running the frontend separately
 // e.g. 'https://aniflix.railway.app'  — leave empty when server serves the files too
-const API_BASE = 'https://animflix-production.up.railway.app';
+const API_BASE = '';
 
 // ── Normalise shows read from the server (arrays stay arrays) ────────────────
 function _normalizeShow(s) {

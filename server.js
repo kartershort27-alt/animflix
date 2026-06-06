@@ -7,10 +7,11 @@ const path    = require('path');
 const app  = express();
 const PORT = process.env.PORT || 3001;
 
-const DATA_FILE = path.join(__dirname, 'data', 'shows.json');
-const UPLOADS   = path.join(__dirname, 'uploads');
+const DATA_DIR  = process.env.DATA_DIR || path.join(__dirname, 'data');
+const DATA_FILE = path.join(DATA_DIR, 'shows.json');
+const UPLOADS   = path.join(DATA_DIR, 'uploads');
 
-fs.mkdirSync(path.dirname(DATA_FILE), { recursive: true });
+fs.mkdirSync(DATA_DIR, { recursive: true });
 fs.mkdirSync(UPLOADS, { recursive: true });
 if (!fs.existsSync(DATA_FILE)) fs.writeFileSync(DATA_FILE, '{}');
 
@@ -18,7 +19,17 @@ if (!fs.existsSync(DATA_FILE)) fs.writeFileSync(DATA_FILE, '{}');
 app.use(cors({ origin: '*' }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname)));       // serve HTML/CSS/JS
-app.use('/uploads', express.static(UPLOADS));         // serve uploaded files
+// Serve uploaded files — set correct MIME types for all video formats
+app.use('/uploads', (req, res, next) => {
+  const ext = req.path.split('.').pop().toLowerCase();
+  const mime = {
+    mkv: 'video/x-matroska', avi: 'video/x-msvideo',
+    mov: 'video/quicktime',  mp4: 'video/mp4',
+    webm: 'video/webm',      m4v: 'video/mp4'
+  }[ext];
+  if (mime) res.setHeader('Content-Type', mime);
+  next();
+}, express.static(UPLOADS));
 
 // ── SSE — real-time push to all connected browsers ───────────────────────────
 const clients = new Set();
@@ -33,7 +44,7 @@ app.get('/api/events', (req, res) => {
   clients.add(res);
 
   // Send current shows immediately so new tabs load data without waiting
-  res.write(`event:init\ndata:${JSON.stringify(_read())}\n\n`);
+  res.write(`event:init\ndata:${JSON.stringify(_readAll())}\n\n`);
 
   req.on('close', () => clients.delete(res));
 });
@@ -100,11 +111,167 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
   res.json({ url });
 });
 
+// ── Library folders (series/ and movies/ under DATA_DIR) ─────────────────────
+const SERIES_DIR = path.join(DATA_DIR, 'series');
+const MOVIES_DIR = path.join(DATA_DIR, 'movies');
+fs.mkdirSync(SERIES_DIR, { recursive: true });
+fs.mkdirSync(MOVIES_DIR, { recursive: true });
+
+const VIDEO_EXTS = new Set(['mp4','mkv','avi','webm','mov','m4v']);
+
+function _fmtSize(b) {
+  return b >= 1e9 ? (b/1e9).toFixed(1)+' GB' : b >= 1e6 ? (b/1e6).toFixed(1)+' MB' : Math.round(b/1e3)+' KB';
+}
+
+// Parse episode info out of a filename: S01E02 - Title.mkv, E3 - Title.mkv, 04 - Title.mkv
+function _parseEp(name) {
+  const base = name.replace(/\.[^.]+$/, '');
+  let m = base.match(/[Ss](\d+)[Ee](\d+)(?:\s*[-–]\s*(.+))?/);
+  if (m) return { season: +m[1], ep: +m[2], title: m[3] ? m[3].trim() : null };
+  m = base.match(/[Ee](\d+)(?:\s*[-–]\s*(.+))?/);
+  if (m) return { season: 1, ep: +m[1], title: m[2] ? m[2].trim() : null };
+  m = base.match(/^(\d+)(?:\s*[-–.]\s*(.+))?/);
+  if (m) return { season: 1, ep: +m[1], title: m[2] ? m[2].trim() : null };
+  return null;
+}
+
+let _libShows = {};
+
+function _scanLibrary() {
+  const result = {};
+
+  // Movies — each video file = one movie
+  try {
+    fs.readdirSync(MOVIES_DIR).forEach(f => {
+      if (!VIDEO_EXTS.has(f.split('.').pop().toLowerCase())) return;
+      const title = f.replace(/\.[^.]+$/, '').replace(/[-_.]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      let sz = '';
+      try { sz = _fmtSize(fs.statSync(path.join(MOVIES_DIR, f)).size); } catch {}
+      result[title] = {
+        title, type: 'Film', age: 'TV-MA', seasons: 'Film', seasonCount: 0,
+        bg: 'linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)', art: '🎬',
+        desc: '', cast: '', genres: '', mood: '', episodes: {},
+        videoUrl:  '/movies/' + encodeURIComponent(f),
+        videoName: f, videoSize: sz
+      };
+    });
+  } catch {}
+
+  // Series — each subfolder = one show, files inside = episodes
+  try {
+    fs.readdirSync(SERIES_DIR).forEach(showName => {
+      const showDir = path.join(SERIES_DIR, showName);
+      try { if (!fs.statSync(showDir).isDirectory()) return; } catch { return; }
+
+      const seasons = {};     // { 1: [{n,t,d}], 2: [...] }
+      const epVideos = {};    // { 's1e1': url, 's2e3': url }
+
+      try {
+        fs.readdirSync(showDir).forEach(f => {
+          if (!VIDEO_EXTS.has(f.split('.').pop().toLowerCase())) return;
+          const p = _parseEp(f);
+          if (!p) return;
+          if (!seasons[p.season]) seasons[p.season] = [];
+          seasons[p.season].push({ n: p.ep, t: p.title || ('Episode ' + p.ep), d: '—' });
+          epVideos['s' + p.season + 'e' + p.ep] =
+            '/series/' + encodeURIComponent(showName) + '/' + encodeURIComponent(f);
+        });
+      } catch {}
+
+      Object.keys(seasons).forEach(s => seasons[s].sort((a, b) => a.n - b.n));
+      const count = Object.keys(seasons).length;
+      if (!count) return;
+
+      const first = Math.min(...Object.keys(seasons).map(Number));
+      const ep1   = seasons[first][0];
+
+      result[showName] = {
+        title: showName, type: 'Series', age: 'TV-MA',
+        seasons: count + ' Season' + (count !== 1 ? 's' : ''), seasonCount: count,
+        bg: 'linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)', art: '🎬',
+        desc: '', cast: '', genres: '', mood: '',
+        episodes: seasons, episodeVideos: epVideos,
+        videoUrl:  ep1 ? epVideos['s' + first + 'e' + ep1.n] : null,
+        videoName: ep1 ? ep1.t : null
+      };
+    });
+  } catch {}
+
+  return result;
+}
+
+// Merge library + admin shows.json (admin metadata overrides library, but episodeVideos are merged)
+function _readAll() {
+  const lib   = _libShows;
+  const admin = _read();
+  const out   = { ...lib };
+  Object.entries(admin).forEach(([title, show]) => {
+    out[title] = {
+      ...(lib[title] || {}), ...show,
+      episodeVideos: { ...(lib[title] && lib[title].episodeVideos || {}), ...(show.episodeVideos || {}) }
+    };
+  });
+  return out;
+}
+
+// Watch library folders and push SSE on changes
+function _watchLibrary() {
+  let timer;
+  const rescan = () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      const prev = _libShows;
+      _libShows = _scanLibrary();
+      const all = _readAll();
+      Object.values(_libShows).forEach(s => {
+        if (JSON.stringify(prev[s.title]) !== JSON.stringify(s)) _push('show_updated', all[s.title] || s);
+      });
+      Object.keys(prev).forEach(t => {
+        if (!_libShows[t] && !_read()[t]) _push('show_deleted', { title: t });
+      });
+    }, 800);
+  };
+  try { fs.watch(SERIES_DIR, { recursive: true }, rescan); } catch {}
+  try { fs.watch(MOVIES_DIR, { recursive: true }, rescan); } catch {}
+}
+
+// Stream series/movies files with range-request support
+function _streamFile(filePath, req, res) {
+  let stat;
+  try { stat = fs.statSync(filePath); } catch { return res.status(404).end(); }
+  const ext  = filePath.split('.').pop().toLowerCase();
+  const mime = { mkv:'video/x-matroska', avi:'video/x-msvideo', mov:'video/quicktime',
+                 mp4:'video/mp4', webm:'video/webm', m4v:'video/mp4' }[ext] || 'video/mp4';
+  const total = stat.size;
+  const range = req.headers.range;
+  if (range) {
+    const [s, e] = range.replace(/bytes=/, '').split('-');
+    const start = parseInt(s, 10), end = e ? parseInt(e, 10) : total - 1;
+    res.writeHead(206, { 'Content-Range': `bytes ${start}-${end}/${total}`,
+      'Accept-Ranges': 'bytes', 'Content-Length': end - start + 1, 'Content-Type': mime });
+    fs.createReadStream(filePath, { start, end }).pipe(res);
+  } else {
+    res.writeHead(200, { 'Content-Length': total, 'Content-Type': mime, 'Accept-Ranges': 'bytes' });
+    fs.createReadStream(filePath).pipe(res);
+  }
+}
+
+app.get('/series/:show/:file', (req, res) =>
+  _streamFile(path.join(SERIES_DIR, decodeURIComponent(req.params.show), decodeURIComponent(req.params.file)), req, res));
+
+app.get('/movies/:file', (req, res) =>
+  _streamFile(path.join(MOVIES_DIR, decodeURIComponent(req.params.file)), req, res));
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function _safeKey(s) { return String(s).replace(/[^a-zA-Z0-9_.-]/g, '_'); }
 function _safePath(s) { return String(s).replace(/\.\./g, '').replace(/[^a-zA-Z0-9_/.-]/g, '_'); }
 
 // ── Start ─────────────────────────────────────────────────────────────────────
 app.listen(PORT, () => {
-  console.log(`\n  AniFlix server running → http://localhost:${PORT}\n`);
+  _libShows = _scanLibrary();
+  _watchLibrary();
+  const s = Object.keys(_libShows).length;
+  console.log(`\n  AniFlix server running → http://localhost:${PORT}`);
+  if (s) console.log(`  Library: ${s} title${s !== 1 ? 's' : ''} loaded from series/ and movies/\n`);
+  else   console.log(`  Library: drop videos into data/series/<Show Name>/ or data/movies/\n`);
 });

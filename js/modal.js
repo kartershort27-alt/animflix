@@ -53,9 +53,12 @@ function renderEpisodes(title, season) {
   const epImgs = media && media.episodeImages;
   const safeTitle = title.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
   document.getElementById('epList').innerHTML = eps.map(ep => {
-    const epKey = 'e' + ep.n;
-    const hasVid = !!(epVids && epVids[epKey]);
-    const imgUrl = epImgs && epImgs[epKey];
+    // Try season-aware key (library shows) then fall back to legacy 'eN' key (admin-uploaded)
+    const epKeyS = 's' + season + 'e' + ep.n;
+    const epKeyE = 'e' + ep.n;
+    const epKey  = (epVids && epVids[epKeyS]) ? epKeyS : epKeyE;
+    const hasVid = !!(epVids && (epVids[epKeyS] || epVids[epKeyE]));
+    const imgUrl = epImgs && (epImgs[epKeyS] || epImgs[epKeyE]);
     const thumbStyle = imgUrl
       ? `background-image:url('${imgUrl}');background-size:cover;background-position:center;`
       : '';

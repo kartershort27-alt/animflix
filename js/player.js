@@ -13,9 +13,13 @@ function openPlayer(title, epKey) {
               || (media && media.videoUrl)
               || null;
 
-  const epNum = epKey ? epKey.replace('e', '') : null;
+  // epKey is either 's1e3' (library) or 'e3' (admin-uploaded)
+  const seasonMatch = epKey && epKey.match(/^s(\d+)e(\d+)$/);
+  const epLabel = seasonMatch
+    ? `S${seasonMatch[1]}:E${seasonMatch[2]}`
+    : epKey ? `Episode ${epKey.replace('e', '')}` : null;
   document.getElementById('vpTitleText').textContent =
-    epNum ? `${title}  —  Episode ${epNum}` : title;
+    epLabel ? `${title}  —  ${epLabel}` : title;
 
   const video = document.getElementById('vpVideo');
   const noVideo = document.getElementById('vpNoVideo');

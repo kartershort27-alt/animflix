@@ -262,6 +262,16 @@
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px;
 }
 
+/* EPISODE IMAGE BUTTON */
+.form-ep-img {
+  background: transparent; border: 1px solid #2e2e2e; color: #555;
+  padding: 5px 8px; border-radius: 3px; font-size: 11px;
+  cursor: pointer; flex-shrink: 0; transition: all 0.15s;
+}
+.form-ep-img:hover { border-color: #4facfe; color: #4facfe; }
+.form-ep-img.has-img { border-color: #4facfe; color: #4facfe; }
+
+
 @media (max-width: 768px) {
   .admin-header { padding: 0 12px; height: 52px; gap: 8px; }
   .admin-logo { font-size: 17px; }
