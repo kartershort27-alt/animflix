@@ -29,15 +29,33 @@ function openPlayer(title, epKey) {
     video.style.display = 'block';
     noVideo.style.display = 'none';
     video.load();
-    video.play().catch(err => console.warn('[player] play() rejected:', err, 'url:', url));
+    video.play().catch(() => {});
     video.onerror = () => {
-      const code = video.error ? video.error.code : '?';
-      const msg  = video.error ? video.error.message : 'unknown';
-      console.error('[player] video error', code, msg, 'url:', url);
-      noVideo.querySelector('.vp-no-video-msg').textContent =
-        'Video failed to load (error ' + code + '). Check the console for details.';
+      // Browser can't play the format (e.g. MKV/H.265) — open with system player instead
       video.style.display = 'none';
+      const msgEl = noVideo.querySelector('.vp-no-video-msg');
+      const hintEl = noVideo.querySelector('.vp-no-video-hint');
+      msgEl.textContent = 'Opening in your media player…';
+      hintEl.textContent = '';
       noVideo.style.display = 'flex';
+      fetch('/api/open-local', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      })
+      .then(r => r.json())
+      .then(json => {
+        if (json.ok) {
+          msgEl.textContent = 'Playing in your default media player.';
+        } else {
+          msgEl.textContent = 'Cannot play this format. Error: ' + (json.error || 'unknown');
+          hintEl.textContent = 'Try converting the file to MP4.';
+        }
+      })
+      .catch(() => {
+        msgEl.textContent = 'Format not supported by browser.';
+        hintEl.textContent = 'Convert the file to MP4/H.264 for in-app playback.';
+      });
     };
   } else {
     video.src = '';

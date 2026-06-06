@@ -4,6 +4,10 @@ const cors    = require('cors');
 const fs      = require('fs');
 const path    = require('path');
 
+// shell is only available when running inside Electron (main process)
+let _shell;
+try { _shell = require('electron').shell; } catch {}
+
 const app  = express();
 const PORT = process.env.PORT || 3001;
 
@@ -116,6 +120,25 @@ const SERIES_DIR = path.join(DATA_DIR, 'series');
 const MOVIES_DIR = path.join(DATA_DIR, 'movies');
 fs.mkdirSync(SERIES_DIR, { recursive: true });
 fs.mkdirSync(MOVIES_DIR, { recursive: true });
+
+// ── Open local file with OS default media player (VLC, MPC-HC, etc.) ─────────
+app.post('/api/open-local', (req, res) => {
+  const raw = (req.body && req.body.url) || '';
+  if (!raw) return res.status(400).json({ error: 'url required' });
+  const rel = raw.replace(/^https?:\/\/localhost:\d+/, '');
+  let filePath;
+  if      (rel.startsWith('/uploads/')) filePath = path.join(UPLOADS,    ...rel.slice('/uploads/'.length).split('/').map(decodeURIComponent));
+  else if (rel.startsWith('/series/'))  filePath = path.join(SERIES_DIR, ...rel.slice('/series/'.length).split('/').map(decodeURIComponent));
+  else if (rel.startsWith('/movies/'))  filePath = path.join(MOVIES_DIR, decodeURIComponent(rel.slice('/movies/'.length)));
+  else return res.status(400).json({ error: 'non-local URL' });
+  if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'file not found: ' + filePath });
+  if (_shell) {
+    _shell.openPath(filePath).then(() => res.json({ ok: true }));
+  } else {
+    require('child_process').exec('start "" "' + filePath + '"');
+    res.json({ ok: true });
+  }
+});
 
 const VIDEO_EXTS = new Set(['mp4','mkv','avi','webm','mov','m4v']);
 
