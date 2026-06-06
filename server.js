@@ -200,52 +200,120 @@ function _scanLibrary() {
   return result;
 }
 
-// ── library.json — shows committed to the GitHub repo ────────────────────────
-let _jsonLib = {};
+// ── library.json — fetched live from GitHub ───────────────────────────────────
+const https = require('https');
 
-function _loadJsonLibrary() {
+const GH_OWNER = process.env.GH_OWNER || 'kartershort27-alt';
+const GH_REPO  = process.env.GH_REPO  || 'animflix';
+const GH_TOKEN = process.env.GH_TOKEN || '';
+
+let _jsonLib     = {};
+let _jsonLibHash = '';
+
+function _parseLibrary({ series = [], movies = [] }) {
+  const result = {};
+  movies.forEach(m => {
+    if (!m.title || !m.url) return;
+    result[m.title] = {
+      title: m.title, type: 'Film', age: m.age || 'TV-MA',
+      seasons: 'Film', seasonCount: 0,
+      bg: 'linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)', art: '🎬',
+      desc: m.desc || '', cast: m.cast || '', genres: m.genres || '',
+      mood: m.mood || '', year: m.year || '',
+      imageUrl: m.thumbnail || '', episodes: {},
+      videoUrl: m.url, videoName: m.title + '.mp4'
+    };
+  });
+  series.forEach(s => {
+    if (!s.title || !s.seasons) return;
+    const seasons = {};
+    const epVideos = {};
+    Object.entries(s.seasons).forEach(([sNum, eps]) => {
+      seasons[sNum] = eps.map(e => ({ n: e.ep, t: e.title || ('Episode ' + e.ep), d: e.duration || '—' }));
+      eps.forEach(e => { if (e.url) epVideos['s' + sNum + 'e' + e.ep] = e.url; });
+    });
+    Object.keys(seasons).forEach(n => seasons[n].sort((a, b) => a.n - b.n));
+    const count = Object.keys(seasons).length;
+    const first = Math.min(...Object.keys(seasons).map(Number));
+    const ep1   = seasons[first] && seasons[first][0];
+    result[s.title] = {
+      title: s.title, type: 'Series', age: s.age || 'TV-MA',
+      seasons: count + ' Season' + (count !== 1 ? 's' : ''), seasonCount: count,
+      bg: 'linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)', art: '🎬',
+      desc: s.desc || '', cast: s.cast || '', genres: s.genres || '',
+      mood: s.mood || '', year: s.year || '',
+      imageUrl: s.thumbnail || '',
+      episodes: seasons, episodeVideos: epVideos,
+      videoUrl:  ep1 ? epVideos['s' + first + 'e' + ep1.n] : null,
+      videoName: ep1 ? ep1.t : null
+    };
+  });
+  return result;
+}
+
+// Fetch library.json from GitHub API. Falls back to local copy on error.
+function _fetchGitHubLibrary() {
+  return new Promise(resolve => {
+    const headers = {
+      'User-Agent':  'AniFlix-Server/1.0',
+      'Accept':      'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28'
+    };
+    if (GH_TOKEN) headers['Authorization'] = 'Bearer ' + GH_TOKEN;
+
+    const req = https.get(
+      `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/library.json`,
+      { headers },
+      res => {
+        let body = '';
+        res.on('data', d => body += d);
+        res.on('end', () => {
+          try {
+            const json  = JSON.parse(body);
+            const sha   = json.sha || '';
+            const data  = JSON.parse(Buffer.from(json.content.replace(/\n/g, ''), 'base64').toString('utf8'));
+            resolve({ data, sha });
+          } catch { resolve(null); }
+        });
+      }
+    );
+    req.on('error', () => resolve(null));
+    req.setTimeout(8000, () => { req.destroy(); resolve(null); });
+  });
+}
+
+async function _loadJsonLibrary() {
+  const result = await _fetchGitHubLibrary();
+  if (result) {
+    _jsonLibHash = result.sha;
+    return _parseLibrary(result.data);
+  }
+  // Fall back to bundled library.json
   const libFile = path.join(__dirname, 'library.json');
-  try {
-    const { series = [], movies = [] } = JSON.parse(fs.readFileSync(libFile, 'utf8'));
-    const result = {};
-    movies.forEach(m => {
-      if (!m.title || !m.url) return;
-      result[m.title] = {
-        title: m.title, type: 'Film', age: m.age || 'TV-MA',
-        seasons: 'Film', seasonCount: 0,
-        bg: 'linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)', art: '🎬',
-        desc: m.desc || '', cast: m.cast || '', genres: m.genres || '',
-        mood: m.mood || '', year: m.year || '',
-        imageUrl: m.thumbnail || '', episodes: {},
-        videoUrl: m.url, videoName: m.title + '.mp4'
-      };
-    });
-    series.forEach(s => {
-      if (!s.title || !s.seasons) return;
-      const seasons = {};
-      const epVideos = {};
-      Object.entries(s.seasons).forEach(([sNum, eps]) => {
-        seasons[sNum] = eps.map(e => ({ n: e.ep, t: e.title || ('Episode ' + e.ep), d: e.duration || '—' }));
-        eps.forEach(e => { if (e.url) epVideos['s' + sNum + 'e' + e.ep] = e.url; });
+  try { return _parseLibrary(JSON.parse(fs.readFileSync(libFile, 'utf8'))); } catch { return {}; }
+}
+
+// Poll GitHub every 60 s; push SSE if library changed
+async function _watchGitHubLibrary() {
+  const poll = async () => {
+    const result = await _fetchGitHubLibrary();
+    if (result && result.sha && result.sha !== _jsonLibHash) {
+      _jsonLibHash = result.sha;
+      const prev  = _jsonLib;
+      _jsonLib    = _parseLibrary(result.data);
+      const all   = _readAll();
+      // Push added/changed shows
+      Object.keys(_jsonLib).forEach(t => {
+        if (JSON.stringify(prev[t]) !== JSON.stringify(_jsonLib[t])) _push('show_updated', all[t] || _jsonLib[t]);
       });
-      Object.keys(seasons).forEach(n => seasons[n].sort((a, b) => a.n - b.n));
-      const count = Object.keys(seasons).length;
-      const first = Math.min(...Object.keys(seasons).map(Number));
-      const ep1   = seasons[first] && seasons[first][0];
-      result[s.title] = {
-        title: s.title, type: 'Series', age: s.age || 'TV-MA',
-        seasons: count + ' Season' + (count !== 1 ? 's' : ''), seasonCount: count,
-        bg: 'linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)', art: '🎬',
-        desc: s.desc || '', cast: s.cast || '', genres: s.genres || '',
-        mood: s.mood || '', year: s.year || '',
-        imageUrl: s.thumbnail || '',
-        episodes: seasons, episodeVideos: epVideos,
-        videoUrl:  ep1 ? epVideos['s' + first + 'e' + ep1.n] : null,
-        videoName: ep1 ? ep1.t : null
-      };
-    });
-    return result;
-  } catch { return {}; }
+      // Push removed shows (only if not in local folders or admin overrides)
+      Object.keys(prev).forEach(t => {
+        if (!_jsonLib[t] && !_libShows[t] && !_read()[t]) _push('show_deleted', { title: t });
+      });
+      console.log('  library.json updated from GitHub →', Object.keys(_jsonLib).length, 'titles');
+    }
+  };
+  setInterval(poll, 60_000);
 }
 
 // Merge all sources: library.json (GitHub) + folder scan (local) + shows.json (admin edits)
@@ -315,13 +383,14 @@ function _safeKey(s) { return String(s).replace(/[^a-zA-Z0-9_.-]/g, '_'); }
 function _safePath(s) { return String(s).replace(/\.\./g, '').replace(/[^a-zA-Z0-9_/.-]/g, '_'); }
 
 // ── Start ─────────────────────────────────────────────────────────────────────
-app.listen(PORT, () => {
-  _jsonLib  = _loadJsonLibrary();
+app.listen(PORT, async () => {
+  _jsonLib  = await _loadJsonLibrary();
   _libShows = _scanLibrary();
   _watchLibrary();
+  _watchGitHubLibrary();
   const j = Object.keys(_jsonLib).length;
   const f = Object.keys(_libShows).length;
   console.log(`\n  AniFlix server running → http://localhost:${PORT}`);
-  console.log(`  library.json: ${j} title${j !== 1 ? 's' : ''}`);
+  console.log(`  library.json: ${j} title${j !== 1 ? 's' : ''} (GitHub: ${GH_OWNER}/${GH_REPO})`);
   console.log(`  Local folders: ${f} title${f !== 1 ? 's' : ''}\n`);
 });
