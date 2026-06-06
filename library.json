@@ -1,4 +1,25 @@
 {
-  "series": [],
+  "series": [
+    {
+      "title": "solo leveling",
+      "age": "TV-MA",
+      "year": "",
+      "desc": "",
+      "cast": "",
+      "genres": "",
+      "mood": "",
+      "thumbnail": "",
+      "seasons": {
+        "1": [
+          {
+            "ep": 1,
+            "title": "1",
+            "url": "http://localhost:3001/uploads/solo_leveling/s1e1.mkv",
+            "duration": ""
+          }
+        ]
+      }
+    }
+  ],
   "movies": []
 }
